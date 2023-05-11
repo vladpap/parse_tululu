@@ -1,11 +1,10 @@
 import requests
 from pathlib import Path
 import os.path
-from pprint import pprint
 from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
-from urllib.parse import urlparse, urljoin, urlsplit
+from urllib.parse import urlparse, urlsplit
 
 
 def check_for_redirect(response):
@@ -54,20 +53,37 @@ def get_book_link_and_name(url):
     check_for_redirect(response)
 
     soup = BeautifulSoup(response.text, 'lxml')
-    
+
+    book_img_shot_url = soup.find('div', id='content').find('img')['src']
     book_name_tag = soup.find('div', id='content').find('h1')
-    book_name = book_name_tag.text.split(':')[0].strip()
-    author_name = book_name_tag.text.split(':')[-1].strip()
+    book_name = book_name_tag.text.split('::')[0].strip()
+    author_name = book_name_tag.text.split('::')[-1].strip()
     try:
         book_urlpath = soup.find_all('a', string='скачать txt')[0].get('href')
     except IndexError:
         return None
 
     url_components = urlsplit(url)
-    book_url_components = url_components._replace(path=book_urlpath)
-    book_txt_url = book_url_components.geturl()
 
-    return (book_txt_url, book_name)
+    book_url_components = url_components._replace(path=book_urlpath)
+    book_img_url_components = url_components._replace(path=book_img_shot_url)
+
+    book_txt_url = book_url_components.geturl()
+    book_img_url = book_img_url_components.geturl()
+
+    return (book_txt_url, book_name, book_img_url)
+
+
+def save_image_from_url(url):
+    image_path = 'images'
+    Path(image_path).mkdir(parents=True, exist_ok=True)
+    image_file_name = os.path.join(image_path, os.path.split(urlparse(url).path)[-1])
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    with open(image_file_name, 'wb') as file:
+        file.write(response.content)
 
 
 def main():
@@ -76,9 +92,15 @@ def main():
         try:
             book_link_and_name = get_book_link_and_name(url.format(id_book))
             if book_link_and_name:
-                download_txt(book_link_and_name[0], book_link_and_name[1])
+                book_txt_url = book_link_and_name[0]
+                book_name = book_link_and_name[1]
+                book_img_url = book_link_and_name[2]
+
+                download_txt(book_txt_url, book_name)
+                save_image_from_url(book_img_url)
+                print(book_name, '\n', book_img_url, '\n')
         except HTTPError as e:
-            print(e)
+            # print(e)
             continue
 
 
