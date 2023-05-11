@@ -59,6 +59,11 @@ def get_book_link_and_name(url):
     for book_comment_tag in book_comment_tags:
         book_comments.append(book_comment_tag.find('span', class_='black').text)
 
+    book_genre_tags = soup.find('div', id='content').find('span', class_='d_book').find_all('a')
+    book_genres = []
+    for book_genre_tag in book_genre_tags:
+        book_genres.append(book_genre_tag.text)
+
     book_img_shot_url = soup.find('div', id='content').find('img')['src']
     book_name_tag = soup.find('div', id='content').find('h1')
     book_name = book_name_tag.text.split('::')[0].strip()
@@ -76,7 +81,7 @@ def get_book_link_and_name(url):
     book_txt_url = book_url_components.geturl()
     book_img_url = book_img_url_components.geturl()
 
-    return (book_txt_url, book_name, book_img_url, book_comments)
+    return (book_txt_url, book_name, book_img_url, book_comments, book_genres)
 
 
 def save_image_from_url(url):
@@ -101,7 +106,8 @@ def main():
                 book_name = book_link_and_name[1]
                 book_img_url = book_link_and_name[2]
                 book_comments = book_link_and_name[3]
-                print(f'{book_name}\n{book_comments}')
+                book_genres = book_link_and_name[4]
+                print(f'{book_name}\n{book_genres}\n{book_comments}')
 
                 # download_txt(book_txt_url, book_name)
                 # save_image_from_url(book_img_url)
