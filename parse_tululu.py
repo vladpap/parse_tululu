@@ -1,6 +1,7 @@
 import requests
 from pathlib import Path
 import os.path
+import argparse
 from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
@@ -104,9 +105,34 @@ def parse_book_page(html_book_page):
 
 
 def main():
+    parser = argparse.ArgumentParser(
+            description='Dowload book from "https://tululu.org/"')
+
+    parser.add_argument(
+        'start_id',
+        help='Start id dowload , default=1',
+        nargs='?',
+        default=1,
+        type=int)
+
+    parser.add_argument(
+        'end_id',
+        help='END id dowload book, if not specified, then start_id + 10',
+        nargs='?',
+        type=int)
+
+    parser.parse_args()
+
+    start_id = parser.parse_args().start_id
+    arg_end_id = parser.parse_args().end_id
+
+    end_id = (
+        start_id + 10
+    ) if (not arg_end_id) or (arg_end_id < start_id) else arg_end_id
+
     base_url = 'https://tululu.org/'
     path_url = 'b{}/'
-    for id_book in range(1, 11):
+    for id_book in range(start_id, end_id):
         book_url = urljoin(base_url, path_url.format(id_book))
         response = requests.get(book_url)
         response.raise_for_status()
