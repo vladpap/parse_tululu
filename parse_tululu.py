@@ -28,8 +28,9 @@ def download_txt(url, filename, folder='books/'):
     """
     filename = sanitize_filename(filename)
     if not os.path.splitext(filename)[-1]:
-        filename += '.txt'
-    file_path = (folder + filename)
+        filename = f'{filename}.txt'
+
+    file_path = (f'{folder}{filename}')
 
     response = requests.get(url)
     response.raise_for_status()
