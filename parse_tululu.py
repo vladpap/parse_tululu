@@ -61,7 +61,7 @@ def save_image_from_url(url):
         file.write(response.content)
 
 
-def parse_book_page(html_book_page):
+def parse_book_page(html_book_page, url):
     soup = BeautifulSoup(html_book_page, 'lxml')
 
     book_comment_tags = soup.find(
@@ -85,10 +85,10 @@ def parse_book_page(html_book_page):
             'a', string='скачать txt')[0].get('href')
 
     book = {
-        'book_txt_short_url': book_txt_short_url,
+        'book_txt_url': urljoin(url, book_txt_short_url),
         'book_name': book_name,
         'book_author': book_author,
-        'book_img_shot_url': book_img_shot_url,
+        'book_img_url': urljoin(url, book_img_shot_url),
         'book_comments': book_comments,
         'book_genres': book_genres,
     }
@@ -137,25 +137,16 @@ def main():
             continue
 
         try:
-            book_page_metadata = parse_book_page(response.text)
+            book_page_metadata = parse_book_page(response.text, book_url)
         except IndexError:
             print(f'Для книги с id: {book_id} нет ссылки на txt.')
             continue
-        
 
-        if book_page_metadata:
-            book_txt_url = urljoin(
-                base_url,
-                book_page_metadata['book_txt_short_url']
-            )
-            book_name = book_page_metadata['book_name']
-            book_img_url = urljoin(
-                base_url,
-                book_page_metadata['book_img_shot_url']
-            )
-            download_txt(book_txt_url, book_name)
-            save_image_from_url(book_img_url)
-        continue
+        book_txt_url = book_page_metadata['book_txt_url']
+        book_name = book_page_metadata['book_name']
+        book_img_url = book_page_metadata['book_img_url']
+        download_txt(book_txt_url, book_name)
+        save_image_from_url(book_img_url)
 
 
 if __name__ == '__main__':
