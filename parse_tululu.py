@@ -10,7 +10,6 @@ from urllib.parse import urljoin, urlparse
 
 def check_for_redirect(response):
     if response.history:
-        # print("Exception")
         err_url = response.history[0].url
         err_code = response.history[0].status_code
         err_msg = f'Redirecting, no book\nurl: "{err_url}"'
@@ -106,7 +105,7 @@ def parse_book_page(html_book_page):
 
 def main():
     parser = argparse.ArgumentParser(
-            description='Dowload book from "https://tululu.org/"')
+            description='Dowload book from https://tululu.org/')
 
     parser.add_argument(
         'start_id',
@@ -123,8 +122,10 @@ def main():
 
     parser.parse_args()
 
-    start_id = parser.parse_args().start_id
-    arg_end_id = parser.parse_args().end_id
+    parse_args = parser.parse_args()
+    
+    start_id = parse_args.start_id
+    arg_end_id = parse_args.end_id
 
     end_id = (
         start_id + 10
@@ -154,9 +155,6 @@ def main():
                 base_url,
                 book_page_metadata['book_img_shot_url']
             )
-            # book_comments = book_page_metadata['book_comments']
-            # book_genres = book_page_metadata['book_genres']
-            # book_author = book_page_metadata['book_author']
             download_txt(book_txt_url, book_name)
             save_image_from_url(book_img_url)
         continue
