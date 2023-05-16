@@ -81,11 +81,8 @@ def parse_book_page(html_book_page):
     book_name = book_name_tag.text.split('::')[0].strip()
     book_author = book_name_tag.text.split('::')[-1].strip()
 
-    try:
-        book_txt_short_url = soup.find_all(
+    book_txt_short_url = soup.find_all(
             'a', string='скачать txt')[0].get('href')
-    except IndexError:
-        return None
 
     book = {
         'book_txt_short_url': book_txt_short_url,
@@ -139,7 +136,12 @@ def main():
             print(f'Книги с id: {book_id} на сайте нет.')
             continue
 
-        book_page_metadata = parse_book_page(response.text)
+        try:
+            book_page_metadata = parse_book_page(response.text)
+        except IndexError:
+            print(f'Для книги с id: {book_id} нет ссылки на txt.')
+            continue
+        
 
         if book_page_metadata:
             book_txt_url = urljoin(
