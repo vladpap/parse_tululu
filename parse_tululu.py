@@ -3,9 +3,11 @@ from pathlib import Path
 import os.path
 import argparse
 from urllib.error import HTTPError
+from requests import RequestException, ConnectTimeout
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 from urllib.parse import urljoin, urlparse
+from time import sleep
 
 
 def check_for_redirect(response):
@@ -32,8 +34,9 @@ def download_txt(url, filename, folder='books/'):
 
     file_path = (f'{folder}{filename}')
 
-    response = requests.get(url)
-    response.raise_for_status()
+    response = make_request(url)
+    if not response:
+        return
 
     check_for_redirect(response)
 
@@ -55,8 +58,9 @@ def save_image_from_url(url):
         os.path.split(urlparse(url).path)[-1]
     )
 
-    response = requests.get(url)
-    response.raise_for_status()
+    response = make_request(url)
+    if not response:
+        return
 
     with open(image_file_name, 'wb') as file:
         file.write(response.content)
@@ -96,6 +100,22 @@ def parse_book_page(html_book_page, url):
     return book
 
 
+def make_request(url):
+    connection_counts = 1
+    while True:
+        try:
+            response = requests.get(url, timeout=6)
+            response.raise_for_status()
+            return response
+        except (RequestException, ConnectTimeout) as e:
+            if connection_counts > 3:
+                print(f'No connection: {str(e)}')
+                return None
+            wait_seconds = 10
+            sleep(wait_seconds * connection_counts)
+            connection_counts += 1
+
+
 def main():
     parser = argparse.ArgumentParser(
             description='Dowload book from https://tululu.org/')
@@ -128,9 +148,11 @@ def main():
     path_url = 'b{}/'
     for book_id in range(start_id, end_id):
         book_url = urljoin(base_url, path_url.format(book_id))
-        response = requests.get(book_url)
-        response.raise_for_status()
 
+        response = make_request(book_url)
+        if not response:
+            print('No connection')
+            return
         try:
             check_for_redirect(response)
         except HTTPError:
