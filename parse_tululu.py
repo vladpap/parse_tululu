@@ -92,7 +92,7 @@ def parse_book_page(html_book_page):
     except IndexError:
         return None
 
-    book_page_metadata = {
+    book = {
         'book_txt_short_url': book_txt_short_url,
         'book_name': book_name,
         'book_author': book_author,
@@ -100,7 +100,7 @@ def parse_book_page(html_book_page):
         'book_comments': book_comments,
         'book_genres': book_genres,
     }
-    return book_page_metadata
+    return book
 
 
 def main():
@@ -141,6 +141,7 @@ def main():
         try:
             check_for_redirect(response)
         except HTTPError:
+            print(f'Книги с id: {book_id} на сайте нет.')
             continue
 
         book_page_metadata = parse_book_page(response.text)
