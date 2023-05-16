@@ -123,7 +123,7 @@ def main():
     parser.parse_args()
 
     parse_args = parser.parse_args()
-    
+
     start_id = parse_args.start_id
     arg_end_id = parse_args.end_id
 
@@ -133,8 +133,8 @@ def main():
 
     base_url = 'https://tululu.org/'
     path_url = 'b{}/'
-    for id_book in range(start_id, end_id):
-        book_url = urljoin(base_url, path_url.format(id_book))
+    for book_id in range(start_id, end_id):
+        book_url = urljoin(base_url, path_url.format(book_id))
         response = requests.get(book_url)
         response.raise_for_status()
 
