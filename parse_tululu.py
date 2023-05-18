@@ -3,11 +3,15 @@ from pathlib import Path
 import os.path
 import argparse
 from urllib.error import HTTPError
-from requests import RequestException, ConnectTimeout
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 from urllib.parse import urljoin, urlparse
 from time import sleep
+import logging
+
+
+class TululuError(requests.RequestException):
+    pass
 
 
 def check_for_redirect(response):
@@ -102,21 +106,31 @@ def parse_book_page(html_book_page, url):
 
 def make_request(url):
     connection_counts = 1
+    wait_seconds = 10
+
     while True:
         try:
             response = requests.get(url, timeout=6)
             response.raise_for_status()
             return response
-        except (RequestException, ConnectTimeout) as e:
+        except (
+                requests.exceptions.ConnectionError,
+                requests.exceptions.ConnectTimeout,
+                requests.exceptions.ReadTimeout
+                ):
             if connection_counts > 3:
-                print(f'No connection: {str(e)}')
-                return None
-            wait_seconds = 10
+                raise TululuError('No connection')
             sleep(wait_seconds * connection_counts)
             connection_counts += 1
 
 
 def main():
+    logging.basicConfig(
+        filename='warning.log',
+        format='%(asctime)s %(message)s',
+        encoding='utf8',
+        level=logging.WARNING)
+
     parser = argparse.ArgumentParser(
             description='Dowload book from https://tululu.org/')
 
@@ -149,27 +163,36 @@ def main():
     for book_id in range(start_id, end_id):
         book_url = urljoin(base_url, path_url.format(book_id))
 
-        response = make_request(book_url)
-        if not response:
-            print('No connection')
+        try:
+            response = make_request(book_url)
+        except TululuError as err:
+            logging.warning(str(err))
             return
         try:
             check_for_redirect(response)
         except HTTPError:
-            print(f'Книги с id: {book_id} на сайте нет.')
+            logging.warning(f'Книги с id: {book_id} на сайте нет.')
             continue
 
         try:
             book_page_metadata = parse_book_page(response.text, book_url)
         except IndexError:
-            print(f'Для книги с id: {book_id} нет ссылки на txt.')
+            logging.warning(f'Для книги с id: {book_id} нет ссылки на txt.')
             continue
 
         book_txt_url = book_page_metadata['book_txt_url']
         book_name = book_page_metadata['book_name']
         book_img_url = book_page_metadata['book_img_url']
-        download_txt(book_txt_url, book_name)
-        save_image_from_url(book_img_url)
+        try:
+            download_txt(book_txt_url, book_name)
+        except TululuError as err:
+            logging.warning(
+                f'No download book ({str(err)}), book url{book_txt_url}, title book{book_name}')
+        try:
+            save_image_from_url(book_img_url)
+        except TululuError as err:
+            logging.warning(
+                f'No save cover book ({str(err)}), book image url{book_img_url}')
 
 
 if __name__ == '__main__':

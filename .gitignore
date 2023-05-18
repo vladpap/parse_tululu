@@ -4,3 +4,4 @@ books/
 images/
 files.py
 bs4_tutorial.py
+*.log
