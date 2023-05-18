@@ -14,6 +14,10 @@ class TululuError(requests.RequestException):
     pass
 
 
+class TululuNoTxtFile(requests.RequestException):
+    pass
+
+
 def check_for_redirect(response):
     if response.history:
         err_url = response.history[0].url
@@ -90,8 +94,12 @@ def parse_book_page(html_book_page, url):
     book_name = book_name_tag.text.split('::')[0].strip()
     book_author = book_name_tag.text.split('::')[-1].strip()
 
-    book_txt_short_url = soup.find_all(
-            'a', string='скачать txt')[0].get('href')
+    book_txt_short_url_tag = soup.find(
+            'a', string='скачать txt')
+    if not book_txt_short_url_tag:
+        raise TululuNoTxtFile('No link download txt file.')
+
+    book_txt_short_url = book_txt_short_url_tag.get('href')
 
     book = {
         'book_txt_url': urljoin(url, book_txt_short_url),
@@ -176,7 +184,7 @@ def main():
 
         try:
             book = parse_book_page(response.text, book_url)
-        except IndexError:
+        except TululuNoTxtFile:
             logging.warning(f'Для книги с id: {book_id} нет ссылки на txt.')
             continue
 
