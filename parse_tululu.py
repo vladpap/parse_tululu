@@ -8,6 +8,7 @@ from pathvalidate import sanitize_filename
 from urllib.parse import urljoin, urlparse
 from time import sleep
 import logging
+from tqdm import tqdm
 
 
 class TululuError(requests.RequestException):
@@ -168,7 +169,7 @@ def main():
 
     base_url = 'https://tululu.org/'
     path_url = 'b{}/'
-    for book_id in range(start_id, end_id):
+    for book_id in tqdm(range(start_id, end_id)):
         book_url = urljoin(base_url, path_url.format(book_id))
 
         try:
