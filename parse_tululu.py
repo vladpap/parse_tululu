@@ -40,7 +40,7 @@ def download_txt(url, filename, folder='books/'):
     if not os.path.splitext(filename)[-1]:
         filename = f'{filename}.txt'
 
-    file_path = (f'{folder}{filename}')
+    file_path = f'{folder}{filename}'
 
     response = make_request(url)
     if not response:
