@@ -175,14 +175,14 @@ def main():
             continue
 
         try:
-            book_page_metadata = parse_book_page(response.text, book_url)
+            book = parse_book_page(response.text, book_url)
         except IndexError:
             logging.warning(f'Для книги с id: {book_id} нет ссылки на txt.')
             continue
 
-        book_txt_url = book_page_metadata['book_txt_url']
-        book_name = book_page_metadata['book_name']
-        book_img_url = book_page_metadata['book_img_url']
+        book_txt_url = book['book_txt_url']
+        book_name = book['book_name']
+        book_img_url = book['book_img_url']
         try:
             download_txt(book_txt_url, book_name)
         except TululuError as err:
