@@ -158,10 +158,10 @@ def main():
 
     parser.parse_args()
 
-    parse_args = parser.parse_args()
+    arguments = parser.parse_args()
 
-    start_id = parse_args.start_id
-    arg_end_id = parse_args.end_id
+    start_id = arguments.start_id
+    arg_end_id = arguments.end_id
 
     end_id = (
         start_id + 10
