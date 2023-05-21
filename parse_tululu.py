@@ -15,6 +15,10 @@ class TululuError(requests.RequestException):
     pass
 
 
+class TululuConnectionError(requests.RequestException):
+    pass
+
+
 class TululuNoTxtFile(requests.RequestException):
     pass
 
@@ -25,7 +29,7 @@ def check_for_redirect(response):
         err_code = response.history[0].status_code
         err_msg = f'Redirecting, no book\nurl: "{err_url}"'
         err_hrs = response.history[0].headers
-        raise HTTPError(err_url, err_code, err_msg, err_hrs, None)
+        raise TululuError(f'Redirect from url{response.url}')
 
 
 def download_txt(url, filename, folder='books/'):
@@ -43,11 +47,13 @@ def download_txt(url, filename, folder='books/'):
 
     file_path = f'{folder}{filename}'
 
-    response = make_request(url)
-    if not response:
-        return
-
-    check_for_redirect(response)
+    try:
+        response = make_request(url)
+        check_for_redirect(response)
+    except TululuConnectionError as err:
+        raise TululuError(f'{err}. No dowload txt book from url: {url}')
+    except TululuError as err:
+        raise TypeError(f'{err}. No book from link: {url}')
 
     book_text = response.text
 
@@ -67,9 +73,10 @@ def save_image_from_url(url):
         os.path.split(urlparse(url).path)[-1]
     )
 
-    response = make_request(url)
-    if not response:
-        return
+    try:
+        response = make_request(url)
+    except TululuConnectionError as err:
+        raise TululuError(f'{err}. No save cover url: {url}')
 
     with open(image_file_name, 'wb') as file:
         file.write(response.content)
@@ -98,7 +105,7 @@ def parse_book_page(html_book_page, url):
     book_txt_short_url_tag = soup.find(
             'a', string='скачать txt')
     if not book_txt_short_url_tag:
-        raise TululuNoTxtFile('No link download txt file.')
+        raise TululuError(f'No link download txt file from url: {url}')
 
     book_txt_short_url = book_txt_short_url_tag.get('href')
 
@@ -128,7 +135,7 @@ def make_request(url):
                 requests.exceptions.ReadTimeout
                 ):
             if connection_counts > 3:
-                raise TululuError('No connection')
+                raise TululuConnectionError('No connection')
             sleep(wait_seconds * connection_counts)
             connection_counts += 1
 
@@ -174,34 +181,18 @@ def main():
 
         try:
             response = make_request(book_url)
-        except TululuError as err:
+            check_for_redirect(response)
+            book = parse_book_page(response.text, book_url)
+            book_txt_url = book['book_txt_url']
+            book_name = book['book_name']
+            book_img_url = book['book_img_url']
+            download_txt(book_txt_url, book_name)
+            save_image_from_url(book_img_url)
+        except TululuConnectionError as err:
             logging.warning(str(err))
             return
-        try:
-            check_for_redirect(response)
-        except HTTPError:
-            logging.warning(f'Книги с id: {book_id} на сайте нет.')
-            continue
-
-        try:
-            book = parse_book_page(response.text, book_url)
-        except TululuNoTxtFile:
-            logging.warning(f'Для книги с id: {book_id} нет ссылки на txt.')
-            continue
-
-        book_txt_url = book['book_txt_url']
-        book_name = book['book_name']
-        book_img_url = book['book_img_url']
-        try:
-            download_txt(book_txt_url, book_name)
         except TululuError as err:
-            logging.warning(
-                f'No download book ({str(err)}), book url{book_txt_url}, title book{book_name}')
-        try:
-            save_image_from_url(book_img_url)
-        except TululuError as err:
-            logging.warning(
-                f'No save cover book ({str(err)}), book image url{book_img_url}')
+            logging.warning(str(err))
 
 
 if __name__ == '__main__':
