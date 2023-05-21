@@ -2,7 +2,6 @@ import requests
 from pathlib import Path
 import os.path
 import argparse
-from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 from urllib.parse import urljoin, urlparse
@@ -25,10 +24,6 @@ class TululuNoTxtFile(requests.RequestException):
 
 def check_for_redirect(response):
     if response.history:
-        err_url = response.history[0].url
-        err_code = response.history[0].status_code
-        err_msg = f'Redirecting, no book\nurl: "{err_url}"'
-        err_hrs = response.history[0].headers
         raise TululuError(f'Redirect from url{response.url}')
 
 
@@ -132,10 +127,10 @@ def make_request(url):
         except (
                 requests.exceptions.ConnectionError,
                 requests.exceptions.ConnectTimeout,
-                requests.exceptions.ReadTimeout
+                requests.exceptions.ReadTimeout,
                 ):
             if connection_counts > 3:
-                raise TululuConnectionError('No connection')
+                raise TululuConnectionError('No connection.')
             sleep(wait_seconds * connection_counts)
             connection_counts += 1
 
@@ -192,6 +187,8 @@ def main():
             logging.warning(str(err))
             return
         except TululuError as err:
+            logging.warning(str(err))
+        except requests.exceptions.HTTPError as err:
             logging.warning(str(err))
 
 
