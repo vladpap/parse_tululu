@@ -117,6 +117,7 @@ def parse_book_page(html_book_page, url):
 
 def make_request(url):
     connection_counts = 1
+    max_connection_count = 3
     wait_seconds = 10
 
     while True:
@@ -129,7 +130,7 @@ def make_request(url):
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.ReadTimeout,
                 ):
-            if connection_counts > 3:
+            if connection_counts > max_connection_count:
                 raise TululuConnectionError('No connection.')
             sleep(wait_seconds * connection_counts)
             connection_counts += 1
