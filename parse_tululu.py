@@ -158,8 +158,6 @@ def main():
         nargs='?',
         type=int)
 
-    parser.parse_args()
-
     arguments = parser.parse_args()
 
     start_id = arguments.start_id
