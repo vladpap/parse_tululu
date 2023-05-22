@@ -18,10 +18,6 @@ class TululuConnectionError(requests.RequestException):
     pass
 
 
-class TululuNoTxtFile(requests.RequestException):
-    pass
-
-
 def check_for_redirect(response):
     if response.history:
         raise TululuError(f'Redirect from url{response.url}')
@@ -48,7 +44,7 @@ def download_txt(url, filename, folder='books/'):
     except TululuConnectionError as err:
         raise TululuError(f'{err}. No dowload txt book from url: {url}')
     except TululuError as err:
-        raise TypeError(f'{err}. No book from link: {url}')
+        raise TululuError(f'{err}. No book from link: {url}')
 
     book_text = response.text
 
