@@ -72,6 +72,8 @@ def save_image_from_url(url):
     with open(image_file_name, 'wb') as file:
         file.write(response.content)
 
+    return image_file_name
+
 
 def parse_book_page(html_book_page, url):
     soup = BeautifulSoup(html_book_page, 'lxml')
