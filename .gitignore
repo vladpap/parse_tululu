@@ -6,3 +6,4 @@ files.py
 bs4_tutorial.py
 *.log
 __pycache__
+*.json

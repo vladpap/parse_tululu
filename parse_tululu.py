@@ -78,25 +78,21 @@ def save_image_from_url(url):
 def parse_book_page(html_book_page, url):
     soup = BeautifulSoup(html_book_page, 'lxml')
 
-    book_comment_tags = soup.find(
-        'div', id='content').find_all(
-        'div', class_='texts'
-        )
-    book_comments = [book_comment_tag.find('span', class_='black').text
+    book_comment_tags = soup.select('div#content div.texts')
+
+    book_comments = [book_comment_tag.select_one('span.black').text
                      for book_comment_tag in book_comment_tags]
 
-    book_genre_tags = soup.find(
-        'div', id='content').find(
-        'span', class_='d_book').find_all('a')
+    book_genre_tags = soup.select('div#content span.d_book a')
     book_genres = [book_genre_tag.text for book_genre_tag in book_genre_tags]
 
-    book_img_shot_url = soup.find('div', id='content').find('img')['src']
-    book_name_tag = soup.find('div', id='content').find('h1')
+    book_img_shot_url = soup.select_one('div#content img').get('src')
+
+    book_name_tag = soup.select_one('div#content h1')
     book_name = book_name_tag.text.split('::')[0].strip()
     book_author = book_name_tag.text.split('::')[-1].strip()
 
-    book_txt_short_url_tag = soup.find(
-            'a', string='скачать txt')
+    book_txt_short_url_tag = soup.select_one('a:-soup-contains("скачать txt")')
     if not book_txt_short_url_tag:
         raise TululuError(f'No link download txt file from url: {url}')
 
