@@ -6,6 +6,28 @@ from parse_tululu import *
 from tqdm import tqdm
 
 
+def create_argparse():
+    parser = argparse.ArgumentParser(
+            description='Dowload books from category https://tululu.org/')
+
+    parser.add_argument(
+        '-s',
+        '--start_page',
+        help='Start page dowload , default=1',
+        metavar='',
+        default=1,
+        type=int)
+
+    parser.add_argument(
+        '-e',
+        '--end_page',
+        help='END page dowload, if not specified, then start_page and until the end',
+        metavar='',
+        type=int)
+
+    return parser
+
+
 def parse_category_page(html_category_page, html_url):
     soup = BeautifulSoup(html_category_page, 'lxml')
     books_url = []
@@ -41,10 +63,19 @@ def main():
         encoding='utf8',
         level=logging.WARNING)
 
+    arguments = create_argparse().parse_args()
+
     category_url = 'https://tululu.org/l55/{}/'
     books_url = []
-    start_page = 1
-    end_page = 2
+    start_page = arguments.start_page
+    end_page = arguments.end_page
+    if not end_page:
+        end_page = start_page + 10
+    elif end_page <= start_page:
+        end_page = start_page + 1
+
+    print(start_page, end_page)
+    exit(0)
 
     for number_page in tqdm(range(start_page, end_page)):
         response = make_request(category_url.format(number_page))
@@ -53,6 +84,7 @@ def main():
             check_for_redirect(response)
         except TululuError as err:
             logging.warning(str(err))
+            return
 
         books_url.extend(parse_category_page(response.text, response.url))
 
