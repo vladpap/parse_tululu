@@ -80,18 +80,8 @@ def parse_category_page(html_category_page, html_url):
 
 
 def save_book_annotations(filename, book_annotations):
-    if os.path.isfile(filename):
-        with open(filename, "r") as file:
-            book_file_annotations = json.load(file)
-    else:
-        book_file_annotations = []
-
-    book_annotations_json = json.dumps(
-        book_file_annotations + book_annotations,
-        ensure_ascii=False)
-
-    with open(filename, "w", encoding='utf8') as file:
-        file.write(book_annotations_json)
+    with open(filename, "a", encoding='utf8') as file:
+        json.dump(book_annotations, file, ensure_ascii=False)
 
 
 def main():
