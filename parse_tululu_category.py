@@ -119,6 +119,10 @@ def main():
     images_folder = '{}/images/'.format(destination_folder)
     json_path = '{}/{}'.format(destination_folder, arguments.json_path)
 
+    if skip_download_text and skip_download_images:
+        print('No download txt and images')
+        return
+
     print('Parse pagas from category...')
     for number_page in tqdm(range(start_page, end_page)):
         try:
@@ -129,10 +133,6 @@ def main():
             continue
 
         book_urls.extend(parse_category_page(response.text, response.url))
-
-    if skip_download_text and skip_download_images:
-        print('No download txt and images')
-        return
 
     book_annotations = []
     print('Download books...')
