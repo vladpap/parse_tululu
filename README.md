@@ -1,9 +1,9 @@
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
 
-# Парсер книг с сайта tululu.org
+# Скрипт скачивания книг с сайта tululu.org
 
-Скрипт скачивает книги в текстовом формате и обложки к ни с ссайта [tululu.org](https://tululu.org/).
+Скрипт скачивает книги в текстовом формате и обложки к ним с ссайта [tululu.org](https://tululu.org/).
 
 Все ошибки логируются в файл `warning.log`.
 
@@ -16,29 +16,29 @@
 $ pip install -r requirements.txt
 ```
 
-## Аргументы
-
-Скрипт принимает до 2 аргументов:
- - если не заданы скачивает книги id c 1 по 10
- - если задан один аргумент, скачивает книги id с указанного по + 10
- - если заданы 2 аргумента, скачивает согласно указанным аргументам, причем 2-ой аргумент должен быть больше иначе скачивается как с 1 аргументом.
-
 ## Запуск
 
 ```bash
-$ python parse_tululu.py
-# скачает книги id  с 1 по 10
+$ python3 parse_tululu_category.py
+```
 
-$ python parse_tululu.py 25
-# скачает книги id  с 25 по 35
+## Аргументы
 
-$ python parse_tululu.py 32 33
-# скачает книги id  с 32 по 33
+```bash
+$ python3 python3 parse_tululu_category.py -h
 
-$ python parse_tululu.py 35 10
-# скачает книги id  с 35 по 45
+usage: parse_tululu_category.py [-h] [-s] [-e] [-i] [-t] [-f] [-j]
 
+Dowload books from category https://tululu.org/
 
+options:
+  -h, --help           show this help message and exit
+  -s , --start_page    Start page dowload , default=1
+  -e , --end_page      END page dowload, if not specified, then start_page + 10
+  -i, --skip_imgs      Specify do not download images, default=False
+  -t, --skip_txt       Specify do not download text book, default=False
+  -f , --dest_folder   Path to the directory with parsing results: pictures, books, JSON
+  -j , --json_path     Specify the name to *.json file with results
 ```
 
 ## Цели проекта
