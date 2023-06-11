@@ -121,9 +121,8 @@ def main():
 
     print('Parse pagas from category...')
     for number_page in tqdm(range(start_page, end_page)):
-        response = make_request(category_url.format(number_page))
-
         try:
+            response = make_request(category_url.format(number_page))
             check_for_redirect(response)
         except TululuError as err:
             logging.warning(str(err))
