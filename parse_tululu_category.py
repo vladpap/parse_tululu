@@ -112,8 +112,6 @@ def main():
     elif end_page <= start_page:
         end_page = start_page + 1
 
-    print(start_page, end_page)
-
     skip_download_images = arguments.skip_imgs
     skip_download_text = arguments.skip_txt
     destination_folder = arguments.dest_folder
