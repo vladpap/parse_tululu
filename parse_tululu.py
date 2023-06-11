@@ -56,8 +56,8 @@ def download_txt(url, filename, folder='books/'):
     return file_path
 
 
-def save_image_from_url(url):
-    image_path = 'images'
+def save_image_from_url(url, folder='images/'):
+    image_path = folder
     Path(image_path).mkdir(parents=True, exist_ok=True)
     image_file_name = os.path.join(
         image_path,

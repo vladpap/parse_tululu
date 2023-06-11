@@ -1,8 +1,18 @@
+import requests
 from bs4 import BeautifulSoup
+import logging
+import argparse
 from urllib.parse import urljoin
 import json
 import os.path
-from parse_tululu import *
+from parse_tululu import (
+    make_request,
+    check_for_redirect,
+    parse_book_page,
+    download_txt,
+    save_image_from_url,
+    TululuError,
+    TululuConnectionError)
 from tqdm import tqdm
 
 
@@ -21,9 +31,38 @@ def create_argparse():
     parser.add_argument(
         '-e',
         '--end_page',
-        help='END page dowload, if not specified, then start_page and until the end',
+        help='END page dowload, if not specified, then start_page + 10',
         metavar='',
         type=int)
+
+    parser.add_argument(
+        '-i',
+        '--skip_imgs',
+        help='Specify do not download images, default=False',
+        default=False,
+        action='store_true')
+
+    parser.add_argument(
+        '-t',
+        '--skip_txt',
+        help='Specify do not download text book, default=False',
+        default=False,
+        action='store_true')
+
+    parser.add_argument(
+        '-f',
+        '--dest_folder',
+        help='Path to the directory with parsing results: '
+             'pictures, books, JSON',
+        metavar='',
+        default='.')
+
+    parser.add_argument(
+        '-j',
+        '--json_path',
+        help='Specify the name to *.json file with results',
+        metavar='',
+        default='books.json')
 
     return parser
 
@@ -40,8 +79,7 @@ def parse_category_page(html_category_page, html_url):
     return books_url
 
 
-def save_book_annotations(book_annotations):
-    filename = 'books.json'
+def save_book_annotations(filename, book_annotations):
     if os.path.isfile(filename):
         with open(filename, "r") as file:
             book_file_annotations = json.load(file)
@@ -75,8 +113,15 @@ def main():
         end_page = start_page + 1
 
     print(start_page, end_page)
-    exit(0)
 
+    skip_download_images = arguments.skip_imgs
+    skip_download_text = arguments.skip_txt
+    destination_folder = arguments.dest_folder
+    books_folder = '{}/books/'.format(destination_folder)
+    images_folder = '{}/images/'.format(destination_folder)
+    json_path = '{}/{}'.format(destination_folder, arguments.json_path)
+
+    print('Parse pagas from category...')
     for number_page in tqdm(range(start_page, end_page)):
         response = make_request(category_url.format(number_page))
 
@@ -88,8 +133,14 @@ def main():
 
         books_url.extend(parse_category_page(response.text, response.url))
 
+    if skip_download_text and skip_download_images:
+        print('No download txt and images')
+        return
+
     book_annotations = []
+    print('Download books...')
     for book_url in tqdm(books_url):
+        book_annotation = {}
         try:
             response = make_request(book_url)
             check_for_redirect(response)
@@ -97,8 +148,28 @@ def main():
             book_txt_url = book['book_txt_url']
             book_name = book['book_name']
             book_img_url = book['book_img_url']
-            book_path = download_txt(book_txt_url, book_name)
-            img_scr = save_image_from_url(book_img_url)
+
+            if skip_download_text:
+                book_path = ''
+            else:
+                book_path = download_txt(
+                    book_txt_url,
+                    book_name,
+                    folder=books_folder)
+
+            if skip_download_images:
+                img_scr = ''
+            else:
+                img_scr = save_image_from_url(
+                    book_img_url,
+                    folder=images_folder)
+
+            book_annotation['title'] = book['book_name']
+            book_annotation['author'] = book['book_author']
+            book_annotation['img_scr'] = img_scr
+            book_annotation['book_path'] = book_path
+            book_annotation['comments'] = book['book_comments']
+            book_annotation['genres'] = book['book_genres']
         except TululuConnectionError as err:
             logging.warning(str(err))
             return
@@ -107,17 +178,10 @@ def main():
         except requests.exceptions.HTTPError as err:
             logging.warning(str(err))
 
-        book_annotation = {}
-        book_annotation['title'] = book['book_name']
-        book_annotation['author'] = book['book_author']
-        book_annotation['img_scr'] = img_scr
-        book_annotation['book_path'] = book_path
-        book_annotation['comments'] = book['book_comments']
-        book_annotation['genres'] = book['book_genres']
+        if not skip_download_text and book_annotation:
+            book_annotations.append(book_annotation)
 
-        book_annotations.append(book_annotation)
-
-    save_book_annotations(book_annotations)
+    save_book_annotations(json_path, book_annotations)
 
 
 if __name__ == '__main__':
