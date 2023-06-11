@@ -126,7 +126,7 @@ def main():
             check_for_redirect(response)
         except TululuError as err:
             logging.warning(str(err))
-            return
+            continue
 
         books_url.extend(parse_category_page(response.text, response.url))
 
