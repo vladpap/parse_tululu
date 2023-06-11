@@ -69,14 +69,14 @@ def create_argparse():
 
 def parse_category_page(html_category_page, html_url):
     soup = BeautifulSoup(html_category_page, 'lxml')
-    books_url = []
+    book_urls = []
 
     for book_tag in soup.select('table.d_book'):
         book_short_url = book_tag.select('a')[1].get('href')
         book_url = urljoin(html_url, book_short_url)
-        books_url.append(book_url)
+        book_urls.append(book_url)
 
-    return books_url
+    return book_urls
 
 
 def save_book_annotations(filename, book_annotations):
@@ -104,7 +104,7 @@ def main():
     arguments = create_argparse().parse_args()
 
     category_url = 'https://tululu.org/l55/{}/'
-    books_url = []
+    book_urls = []
     start_page = arguments.start_page
     end_page = arguments.end_page
     if not end_page:
@@ -128,7 +128,7 @@ def main():
             logging.warning(str(err))
             continue
 
-        books_url.extend(parse_category_page(response.text, response.url))
+        book_urls.extend(parse_category_page(response.text, response.url))
 
     if skip_download_text and skip_download_images:
         print('No download txt and images')
@@ -136,7 +136,7 @@ def main():
 
     book_annotations = []
     print('Download books...')
-    for book_url in tqdm(books_url):
+    for book_url in tqdm(book_urls):
         book_annotation = {}
         try:
             response = make_request(book_url)
