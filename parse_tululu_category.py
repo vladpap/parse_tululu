@@ -4,7 +4,6 @@ import logging
 import argparse
 from urllib.parse import urljoin
 import json
-import os.path
 from parse_tululu import (
     make_request,
     check_for_redirect,
@@ -118,7 +117,9 @@ def main():
         try:
             response = make_request(category_url.format(number_page))
             check_for_redirect(response)
-        except TululuError as err:
+        except (TululuConnectionError,
+                requests.exceptions.HTTPError,
+                TululuError) as err:
             logging.warning(str(err))
             continue
 
@@ -160,9 +161,8 @@ def main():
         except TululuConnectionError as err:
             logging.warning(str(err))
             return
-        except TululuError as err:
-            logging.warning(str(err))
-        except requests.exceptions.HTTPError as err:
+        except (requests.exceptions.HTTPError,
+                TululuError) as err:
             logging.warning(str(err))
 
         if not skip_download_text and book_annotation:
