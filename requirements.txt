@@ -3,3 +3,6 @@ BeautifulSoup4==4.12.*
 lxml==4.9.*
 pathvalidate==2.5.*
 tqdm==4.65.*
+Jinja2==3.1.*
+more-itertools==9.1.*
+livereload==2.6.*
