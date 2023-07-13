@@ -8,9 +8,45 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
-    <title>Hello, world!</title>
+    <title>Моя библиотека</title>
   </head>
   <body>
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        {% if current_page == 1 %}
+          <li class="page-item disabled">
+            <span class="page-link">Назад</span>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <a class="page-link" href="../pages/index{{ current_page - 1 }}.html">Назад</a>
+          </li>
+        {% endif %}
+         {% for page in range(1, pages + 1) %}
+          {% if page == current_page %}
+            <li class="page-item active" aria-current="page">
+              <span class="page-link">
+                {{ page }}
+                <span class="sr-only">(current)</span>
+              </span>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="../pages/index{{ page }}.html">{{ page }}</a>
+            </li>
+          {% endif %}
+         {% endfor %}
+         {% if current_page == pages %}
+          <li class="page-item disabled">
+            <span class="page-link">Вперёд</span>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <a class="page-link" href="../pages/index{{ current_page + 1 }}.html">Вперёд</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
     <div class="container">
       {% for two_books in books %}
         <div class="row">
@@ -19,13 +55,13 @@
               <div class="card mb-3" style="max-width: 540px;">
                 <div class="row no-gutters">
                   <div class="col-md-4">
-                    <img src="{{ book.img_scr|urlencode }}" class="card-img" alt="{{ book.title }}">
+                    <img src="../{{ book.img_scr | urlencode }}" class="card-img" alt="{{ book.title }}">
                   </div>
                   <div class="col-md-8">
                     <div class="card-body">
                       <h5 class="card-title">{{ book.title }}</h5>
                       <p class="card-text">Author: {{ book.author }}</p>
-                      <a class="card-text" href="{{ book.book_path|urlencode }}">
+                      <a class="card-text" href="../{{ book.book_path | urlencode }}">
                         Читать
                       </a>
                     </div>

@@ -29,6 +29,9 @@ def rebuild():
         template = env.get_template('template.html')
         rendered_page = template.render(
             books=two_book,
+            pages=len(page_books),
+            current_page=page_number,
+
             )
         file_name = os.path.join(
             'pages',
@@ -44,7 +47,7 @@ def main():
 
     server.watch('template.html', rebuild)
 
-    server.serve(root='.')
+    server.serve(root='.', default_filename='./pages/index1.html')
 
 
 if __name__ == '__main__':
