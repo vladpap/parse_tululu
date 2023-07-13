@@ -7,3 +7,4 @@ bs4_tutorial.py
 *.log
 __pycache__
 *.json
+.DS_Store
