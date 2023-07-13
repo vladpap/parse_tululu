@@ -2,6 +2,21 @@
 ## Сайт библиотеки
 [Личная библиотека](https://vladpap.github.io/parse_tululu/)
 
+## Установка.
+- Python3 должен быть уже установлен.
+- Рекомендуется использовать среду окружения [venv](https://docs.python.org/3/library/venv.html) 
+для изоляции проекта.
+ - Используйте `pip` (или `pip3`, если есть конфликт с Python2) для установки зависимостей
+```console
+$ pip install -r requirements.txt
+```
+
+## Запуск
+
+```bash
+$ python3 render_website.py
+```
+
 ## Скрипты для скачивания книг
 [Scripts](https://github.com/vladpap/parse_tululu/tree/main/scripts)
 
