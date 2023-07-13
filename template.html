@@ -11,7 +11,7 @@
     <title>Моя библиотека</title>
   </head>
   <body>
-    <nav aria-label="Page navigation example">
+    <nav aria-label="Page navigation example" class="mt-5">
       <ul class="pagination justify-content-center">
         {% if current_page == 1 %}
           <li class="page-item disabled">
@@ -61,6 +61,11 @@
                     <div class="card-body">
                       <h5 class="card-title">{{ book.title }}</h5>
                       <p class="card-text">Author: {{ book.author }}</p>
+                      <p class="card-text">
+                        {% for genre in book.genres %}
+                          <span class="badge badge-secondary">{{ genre }}</span>
+                        {% endfor %}
+                      </p>
                       <a class="card-text" href="../{{ book.book_path | urlencode }}">
                         Читать
                       </a>
