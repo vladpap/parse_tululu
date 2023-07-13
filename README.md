@@ -41,6 +41,9 @@ options:
   -j , --json_path     Specify the name to *.json file with results
 ```
 
+## Сайт библиотеки
+[Личная библиотека](https://vladpap.github.io/parse_tululu/)
+
 ## Цели проекта
 
 Код написан в учебных целях — это урок в курсе по Python [Devman](https://dvmn.org).
