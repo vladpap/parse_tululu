@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- FAVICON -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+    <link rel="mask-icon" href="/static/favicon/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
 
@@ -63,7 +63,7 @@
               <div class="card mb-3" style="max-width: 540px;">
                 <div class="row no-gutters">
                   <div class="col-md-4">
-                    <img src="../{{ book.img_scr | urlencode }}" class="card-img" alt="{{ book.title }}">
+                    <img src="../media/{{ book.img_scr | urlencode }}" class="card-img" alt="{{ book.title }}">
                   </div>
                   <div class="col-md-8">
                     <div class="card-body">
@@ -74,7 +74,7 @@
                           <span class="badge badge-secondary">{{ genre }}</span>
                         {% endfor %}
                       </p>
-                      <a class="card-text" href="../{{ book.book_path | urlencode }}">
+                      <a class="card-text" href="../media/{{ book.book_path | urlencode }}">
                         Читать
                       </a>
                     </div>
