@@ -19,6 +19,15 @@ $ python3 render_website.py
 
 [Открыть библиотеку](http://127.0.0.1:5500/)
 
+## Чтение библиотеки оффлайн
+
+Скачать проект
+```bash
+$ git clone https://github.com/vladpap/parse_tululu.git
+```
+или скачить zip файл проекта
+[]()
+
 ## Скрипты для скачивания книг
 [Scripts](https://github.com/vladpap/parse_tululu/tree/main/scripts)
 
