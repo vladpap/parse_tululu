@@ -20,8 +20,8 @@ def rebuild():
     with open(base_file_name, "r") as base_file:
         books = json.load(base_file)
 
-    two_books = list(chunked(books, 2))
-    page_books = list(chunked(two_books, 10))
+    page_books_column = list(chunked(books, 2))
+    page_books = list(chunked(page_books_column, 10))
 
     os.makedirs('pages', exist_ok=True)
 
