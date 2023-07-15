@@ -14,9 +14,6 @@ def rebuild():
         autoescape=select_autoescape(['html', 'xml'])
     )
 
-    #books = load_books()
-    base_file_name = os.getenv('BASE_FILE_NAME', default='books.json')
-
     with open(base_file_name, 'r') as base_file:
         books = json.load(base_file)
 
@@ -44,16 +41,13 @@ def rebuild():
 
 def main():
     load_dotenv()
-    # base_file_name = os.getenv('BASE_FILE_NAME', default='books.json')
-
-    # books = load_books(base_file_name)
+    global base_file_name
+    base_file_name = os.getenv('BASE_FILE_NAME', default='books.json')
 
     rebuild()
 
     server = Server()
-
     server.watch('template.html', rebuild)
-
     server.serve(root='.', default_filename='./pages/index1.html')
 
 
