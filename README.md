@@ -17,6 +17,8 @@ $ pip install -r requirements.txt
 $ python3 render_website.py
 ```
 
+[Открыть библиотеку](http://127.0.0.1:5500/)
+
 ## Скрипты для скачивания книг
 [Scripts](https://github.com/vladpap/parse_tululu/tree/main/scripts)
 
