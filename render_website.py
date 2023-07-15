@@ -17,7 +17,7 @@ def rebuild():
     #books = load_books()
     base_file_name = os.getenv('BASE_FILE_NAME', default='books.json')
 
-    with open(base_file_name, "r") as base_file:
+    with open(base_file_name, 'r') as base_file:
         books = json.load(base_file)
 
     books_column_count = 2
@@ -38,7 +38,7 @@ def rebuild():
         file_name = os.path.join(
             'pages',
             'index%s' % page_number + '.html')
-        with open(file_name, 'w', encoding="utf8") as file:
+        with open(file_name, 'w', encoding='utf8') as file:
             file.write(rendered_page)
 
 
