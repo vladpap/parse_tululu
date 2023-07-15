@@ -12,9 +12,9 @@ def load_books():
     base_file_name = os.getenv('BASE_FILE_NAME', default='books.json')
 
     with open(base_file_name, "r") as base_file:
-        books_json = base_file.read()
+        books = json.load(base_file)
 
-    return json.loads(books_json)
+    return books
 
 
 def rebuild():
