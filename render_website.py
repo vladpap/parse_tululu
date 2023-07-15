@@ -8,22 +8,18 @@ from more_itertools import chunked
 
 
 
-def load_books():
-    base_file_name = os.getenv('BASE_FILE_NAME', default='books.json')
-
-    with open(base_file_name, "r") as base_file:
-        books = json.load(base_file)
-
-    return books
-
-
 def rebuild():
     env = Environment(
         loader=FileSystemLoader('.'),
         autoescape=select_autoescape(['html', 'xml'])
     )
 
-    books = load_books()
+    #books = load_books()
+    base_file_name = os.getenv('BASE_FILE_NAME', default='books.json')
+
+    with open(base_file_name, "r") as base_file:
+        books = json.load(base_file)
+
     two_books = list(chunked(books, 2))
     page_books = list(chunked(two_books, 10))
 
