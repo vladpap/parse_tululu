@@ -11,6 +11,14 @@
 $ pip install -r requirements.txt
 ```
 
+## Изменить имя файла базы библиотеки.
+
+Создать в корне файл ```.env``` с переменной BASE_FILE_NAME
+
+```console
+BASE_FILE_NAME=books.json
+```
+
 ## Запуск
 
 ```bash
@@ -21,12 +29,22 @@ $ python3 render_website.py
 
 ## Чтение библиотеки оффлайн
 
-Скачать проект
+1. Скачать проект
 ```bash
 $ git clone https://github.com/vladpap/parse_tululu.git
 ```
-или скачить zip файл проекта
-[]()
+или скачать zip файл проекта
+
+![download zip from github](https://github.com/vladpap/parse_tululu/raw/main/for_readme/download_progect_zip.png)
+
+2. Если скачивали zip проекта - распаковать архив.
+
+3. Зайти в папку ```parse_tululu```
+
+4. Открыть браузером файл ```index.html```
+
+
+
 
 ## Скрипты для скачивания книг
 [Scripts](https://github.com/vladpap/parse_tululu/tree/main/scripts)
