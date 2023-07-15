@@ -1,13 +1,17 @@
 import json
 import os
 
+from dotenv import load_dotenv
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from livereload import Server
 from more_itertools import chunked
 
 
+
 def load_books():
-    with open("books.json", "r") as f:
+    base_file_name = os.getenv('BASE_FILE_NAME', default='books.json')
+
+    with open(base_file_name, "r") as f:
         books_json = f.read()
 
     return json.loads(books_json)
@@ -41,6 +45,11 @@ def rebuild():
 
 
 def main():
+    load_dotenv()
+    # base_file_name = os.getenv('BASE_FILE_NAME', default='books.json')
+
+    # books = load_books(base_file_name)
+
     rebuild()
 
     server = Server()
