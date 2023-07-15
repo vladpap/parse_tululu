@@ -11,8 +11,8 @@ from more_itertools import chunked
 def load_books():
     base_file_name = os.getenv('BASE_FILE_NAME', default='books.json')
 
-    with open(base_file_name, "r") as f:
-        books_json = f.read()
+    with open(base_file_name, "r") as base_file:
+        books_json = base_file.read()
 
     return json.loads(books_json)
 
